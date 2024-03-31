@@ -55,7 +55,7 @@ class FleetContext implements Context
     */
    public function aLocation()
    {
-      $this->aLocation = new Location("ParkingPlace1"); //assumed "ParkingPlace1" for simplicity
+      $this->aLocation = new Location("43.4730119,5.5017451"); //assumed "43.4730119,5.5017451" for simplicity
    }
 
    /**

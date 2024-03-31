@@ -16,25 +16,25 @@ class Location
      *
      * @var string
      */
-    private string $name;
+    private string $gps_coordinates;
 
     /**
      * Constructs the Location
      *
-     * @param  string $name The name of the Location
+     * @param  string $gps_coordinates The name of the Location
      */
-    public function __construct(string $name)
+    public function __construct(string $gps_coordinates)
     {
-        $this->name = $name;
+        $this->gps_coordinates = $gps_coordinates;
     }
 
     /**
-     * Get the name of the Location
+     * Get the gps coordinates of the Location
      *
-     * @return string the name of the Location
+     * @return string the gps coordinates of the Location
      */
-    public function getName(): string
+    public function getGpsCoordinates(): string
     {
-        return $this->name;
+        return $this->gps_coordinates;
     }
 }

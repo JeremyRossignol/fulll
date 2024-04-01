@@ -1,0 +1,9 @@
+default:
+    suites:
+        default:
+            contexts:
+                - FeatureContext
+                - FleetContext
+            #paths :
+            #    - '%paths.base%/features'
+            #    - '%paths.base%/src'

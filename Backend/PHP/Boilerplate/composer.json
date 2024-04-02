@@ -2,9 +2,26 @@
     "type": "project",
     "license": "proprietary",
     "require": {
-        "behat/behat": "*"
-    },
-    "require-dev": {
+        "behat/behat": "*",
+        "symfony/flex": "^2.4",
+        "doctrine/dbal": "^3",
+        "doctrine/doctrine-bundle": "^2.12",
+        "doctrine/doctrine-migrations-bundle": "^3.3",
+        "doctrine/orm": "^3.1",
+        "api-platform/core": "^3.2",
+        "nelmio/cors-bundle": "^2.4",
+        "symfony/asset": "^6.4",
+        "symfony/expression-language": "^6.4",
+        "symfony/security-bundle": "^6.4",
+        "phpdocumentor/reflection-docblock": "^5.3",
+        "phpstan/phpdoc-parser": "^1.27",
+        "symfony/property-access": "^6.4",
+        "symfony/property-info": "^6.4",
+        "symfony/serializer": "^6.4",
+        "symfony/twig-bundle": "^6.4",
+        "symfony/validator": "^6.4",
+        "symfony/runtime": "^6.4",
+        "symfony/dotenv": "^6.4"
     },
     "config": {
         "preferred-install": {
@@ -12,12 +29,28 @@
         },
         "allow-plugins": {
             "ocramius/package-versions": true,
-            "symfony/flex": true
+            "symfony/flex": true,
+            "symfony/runtime": true
         }
     },
     "autoload": {
         "psr-4": {
-            "Fulll\\": "src/"
+            "Fulll\\": "src/",
+            "App\\": "src/"
         }
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        }
+    },
+    "extra": {
+        "symfony": {
+            "docker": true
+        }
+    },
+    "require-dev": {
+        "symfony/maker-bundle": "^1.57"
     }
 }

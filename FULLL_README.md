@@ -70,12 +70,13 @@ Versioning is mandatory and the base of the setup.
 
 We could see a solution like this :
 - Dev repository
-   A **master** branch and multiple **dev** branches. The **dev** branches are used for developpement. Every dev branch is for one feature or issue and every feature must have unit test. Only when the feature/issue passed unit tests and is finished we can merge it to **master**
-   The merges must be supervised by at least 2 different people that reviews the code.
+   - A **master** branch and multiple **dev** branches. The **dev** branches are used for developpement. Every dev branch is for one feature or issue and every feature must have unit test. Only when the feature/issue passed unit tests and is finished we can merge it to **master**
+   - The merges must be supervised by at least 2 different people that reviews the code.
 - Production repository
-   Everything on **master** branch of the Dev repository is deployed on a **pre-prod** branch :
+   - Everything on **master** branch of the Dev repository is deployed on a **pre-prod** branch :
       - All the unit tests are OK
       - Linting tools reviewed the code and checked if everything is ok (from formatting, to vulnerabilities check or even optimize code and stantardise it)
-   On the **pre-prod** branch we need testers to do all functionnals tests. If everything is ok we can backup BDD and deploy the branch on **master** of the Prod repository and mark it as a new version.
-If a problem is detected late the rollback is easy with a versioning system. That's why it is really secure.
+   - On the **pre-prod** branch we need testers to do all functionnals tests. If everything is ok we can backup BDD and deploy the branch on **master** of the Prod repository and mark it as a new version.
+
+If a problem is detected late the rollback is easy with a versioning system. That's why i find it really secure.
 

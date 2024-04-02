@@ -19,16 +19,10 @@ class Fleet
 
     #[ORM\ManyToOne(inversedBy: 'fleets')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user_id = null;
+    private ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Vehicle::class, inversedBy: 'fleets')]
     private Collection $vehicles;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updated_at = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
 
     public function __construct()
     {
@@ -47,14 +41,14 @@ class Fleet
         return $this;
     }
 
-    public function getUserId(): ?User
+    public function getUser(): ?User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUserId(?User $user_id): static
+    public function setUser(?User $user): static
     {
-        $this->user_id = $user_id;
+        $this->user = $user;
 
         return $this;
     }
@@ -83,27 +77,53 @@ class Fleet
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    /**
+     * Check if the Vehicle already exists in the Fleet
+     *
+     * @param  Vehicle $vehicle the Vehicle to check
+     * @return boolean true if it exists, false otherwise
+     */
+    public function hasVehicle(Vehicle $vehicle): bool
     {
-        return $this->updated_at;
+        return $this->getVehicles()->contains($vehicle);
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
+    /**
+     * Add the Vehicle into this Fleet if the Fleet doesn't already have the Vehicle
+     *
+     * @param  Vehicle $vehicle The Vehicle to add
+     * @return boolean true if the vehicle was added, false otherwise
+     */
+    public function registerVehicle(Vehicle $vehicle): bool
     {
-        $this->updated_at = $updated_at;
-
-        return $this;
+        if ($this->hasVehicle($vehicle)) {
+            return false;
+        } else {
+            $this->addVehicle($vehicle);
+            return true;
+        }
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    /**
+     * Get the location of the Vehicle
+     *
+     * @param  Vehicle $vehicle
+     * @return Location the location of the vehicle
+     */
+    public function localizeVehicle(Vehicle $vehicle): Location
     {
-        return $this->created_at;
+        return $vehicle->localize();
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    /**
+     * Park the Vehicle to a Location. Returns true if succesfully parked, false otherwise.
+     *
+     * @param  Vehicle $vehicle the Vehicle to park
+     * @param  Location $location the Location where to park the vehicle
+     * @return bool true if succesfully parked, false otherwise
+     */
+    public function parkVehicleTo(Vehicle $vehicle, Location $location): bool
     {
-        $this->created_at = $created_at;
-
-        return $this;
+        return $vehicle->parkTo($location);
     }
 }

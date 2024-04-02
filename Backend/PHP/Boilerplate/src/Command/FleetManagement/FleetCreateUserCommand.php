@@ -10,17 +10,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Entity\FleetManagement\Fleet;
 use App\Entity\FleetManagement\User;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 #[AsCommand(
-    name: 'fleet:create',
-    description: 'fleet creation',
+    name: 'fleet:create-user',
+    description: 'fleet user creation',
 )]
-class FleetCreateCommand extends Command
+class FleetCreateUserCommand extends Command
 {
     private $entityManager;
 
@@ -33,7 +32,7 @@ class FleetCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('userId', InputArgument::REQUIRED, 'The id of the owner user')
+            ->addArgument('name', InputArgument::REQUIRED, 'The name of the user')
             //->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
@@ -41,21 +40,15 @@ class FleetCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $user_id = intval($input->getArgument('userId'));
+        $name = $input->getArgument('name');
 
-        if ($user_id) {
+        if ($name) {
             try {
-                $user = $this->entityManager->getRepository(User::class)->find($user_id);
-                if ($user) {
-                    $fleet = new Fleet();
-                    $fleet->setUser($user);
-                    $this->entityManager->persist($fleet);
-                    $this->entityManager->flush();
-                    $io->success('Fleet created');
-                } else {
-                    $io->error('User not found');
-                    return Command::FAILURE;
-                }
+                $user = new User();
+                $user->setName($name);
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+                $io->success('User created [id: ' . $user->getId() . ']');
             } catch (\Throwable $th) {
                 $io->error($th->getMessage());
                 return Command::FAILURE;

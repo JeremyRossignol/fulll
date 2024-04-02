@@ -10,17 +10,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Entity\FleetManagement\Fleet;
-use App\Entity\FleetManagement\User;
+use App\Entity\FleetManagement\Vehicle;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 #[AsCommand(
-    name: 'fleet:create',
-    description: 'fleet creation',
+    name: 'fleet:create-vehicle',
+    description: 'fleet vehicle creation',
 )]
-class FleetCreateCommand extends Command
+class FleetCreateVehicleCommand extends Command
 {
     private $entityManager;
 
@@ -33,7 +32,7 @@ class FleetCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('userId', InputArgument::REQUIRED, 'The id of the owner user')
+            ->addArgument('plateNumber', InputArgument::REQUIRED, 'The plate number of the vehicle')
             //->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
@@ -41,21 +40,15 @@ class FleetCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $user_id = intval($input->getArgument('userId'));
+        $plate_number = $input->getArgument('plateNumber');
 
-        if ($user_id) {
+        if ($plate_number) {
             try {
-                $user = $this->entityManager->getRepository(User::class)->find($user_id);
-                if ($user) {
-                    $fleet = new Fleet();
-                    $fleet->setUser($user);
-                    $this->entityManager->persist($fleet);
-                    $this->entityManager->flush();
-                    $io->success('Fleet created');
-                } else {
-                    $io->error('User not found');
-                    return Command::FAILURE;
-                }
+                $vehicle = new Vehicle();
+                $vehicle->setPlateNumber($plate_number);
+                $this->entityManager->persist($vehicle);
+                $this->entityManager->flush();
+                $io->success('Vehicle created [id: ' . $vehicle->getId() . ']');
             } catch (\Throwable $th) {
                 $io->error($th->getMessage());
                 return Command::FAILURE;

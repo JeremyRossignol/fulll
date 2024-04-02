@@ -11,16 +11,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 use App\Entity\FleetManagement\Fleet;
-use App\Entity\FleetManagement\User;
+use App\Entity\FleetManagement\Vehicle;
+use App\Entity\FleetManagement\Location;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 #[AsCommand(
-    name: 'fleet:create',
-    description: 'fleet creation',
+    name: 'fleet:localize-vehicle',
+    description: 'get the location of a fleet\'s vehicle',
 )]
-class FleetCreateCommand extends Command
+class FleetLocalizeVehicleCommand extends Command
 {
     private $entityManager;
 
@@ -33,7 +34,8 @@ class FleetCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('userId', InputArgument::REQUIRED, 'The id of the owner user')
+            ->addArgument('fleetId', InputArgument::REQUIRED, 'The id of the fleet of the vehicle')
+            ->addArgument('vehiclePlateNumber', InputArgument::REQUIRED, 'The plate number of the vehicle to localize')
             //->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
@@ -41,19 +43,23 @@ class FleetCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $user_id = intval($input->getArgument('userId'));
+        $fleet_id = intval($input->getArgument('fleetId'));
+        $vehicle_plate_number = $input->getArgument('vehiclePlateNumber');
 
-        if ($user_id) {
+        if ($fleet_id && $vehicle_plate_number) {
             try {
-                $user = $this->entityManager->getRepository(User::class)->find($user_id);
-                if ($user) {
-                    $fleet = new Fleet();
-                    $fleet->setUser($user);
-                    $this->entityManager->persist($fleet);
-                    $this->entityManager->flush();
-                    $io->success('Fleet created');
+                $fleet = $this->entityManager->getRepository(Fleet::class)->find($fleet_id);
+                if ($fleet) {
+                    $vehicle = $this->entityManager->getRepository(Vehicle::class)->findOneBy(['plate_number' => $vehicle_plate_number]);
+                    if ($vehicle) {
+                        $location = $fleet->localizeVehicle($vehicle);
+                        $io->success('lat : ' . $location->getLatitude() . ' lng : ' . $location->getLongitude());
+                    } else {
+                        $io->error('Vehicle not found');
+                        return Command::FAILURE;
+                    }
                 } else {
-                    $io->error('User not found');
+                    $io->error('Fleet not found');
                     return Command::FAILURE;
                 }
             } catch (\Throwable $th) {

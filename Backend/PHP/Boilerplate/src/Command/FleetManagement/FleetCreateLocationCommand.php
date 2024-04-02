@@ -10,17 +10,16 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Entity\FleetManagement\Fleet;
-use App\Entity\FleetManagement\User;
+use App\Entity\FleetManagement\Location;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 
 #[AsCommand(
-    name: 'fleet:create',
-    description: 'fleet creation',
+    name: 'fleet:create-location',
+    description: 'fleet location creation',
 )]
-class FleetCreateCommand extends Command
+class FleetCreateLocationCommand extends Command
 {
     private $entityManager;
 
@@ -33,7 +32,8 @@ class FleetCreateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('userId', InputArgument::REQUIRED, 'The id of the owner user')
+            ->addArgument('latitude', InputArgument::REQUIRED, 'The latitude of the location')
+            ->addArgument('longitude', InputArgument::REQUIRED, 'The longitude of the longitude')
             //->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
@@ -41,21 +41,17 @@ class FleetCreateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $user_id = intval($input->getArgument('userId'));
+        $latitude = $input->getArgument('latitude');
+        $longitude = $input->getArgument('longitude');
 
-        if ($user_id) {
+        if ($latitude && $longitude) {
             try {
-                $user = $this->entityManager->getRepository(User::class)->find($user_id);
-                if ($user) {
-                    $fleet = new Fleet();
-                    $fleet->setUser($user);
-                    $this->entityManager->persist($fleet);
-                    $this->entityManager->flush();
-                    $io->success('Fleet created');
-                } else {
-                    $io->error('User not found');
-                    return Command::FAILURE;
-                }
+                $location = new Location();
+                $location->setLatitude($latitude);
+                $location->setLongitude($longitude);
+                $this->entityManager->persist($location);
+                $this->entityManager->flush();
+                $io->success('Location created [id: ' . $location->getId() . ']');
             } catch (\Throwable $th) {
                 $io->error($th->getMessage());
                 return Command::FAILURE;

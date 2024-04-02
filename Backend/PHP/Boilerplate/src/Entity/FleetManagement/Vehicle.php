@@ -18,13 +18,7 @@ class Vehicle
     private ?int $id = null;
 
     #[ORM\OneToOne(inversedBy: 'vehicle', cascade: ['persist', 'remove'])]
-    private ?Location $location_id = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updated_at = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    private ?Location $location = null;
 
     #[ORM\ManyToMany(targetEntity: Fleet::class, mappedBy: 'vehicles')]
     private Collection $fleets;
@@ -49,38 +43,14 @@ class Vehicle
         return $this;
     }
 
-    public function getLocationId(): ?Location
+    public function getLocation(): ?Location
     {
-        return $this->location_id;
+        return $this->location;
     }
 
-    public function setLocationId(?Location $location_id): static
+    public function setLocation(?Location $location): static
     {
-        $this->location_id = $location_id;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updated_at;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
-    {
-        $this->updated_at = $updated_at;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
+        $this->location = $location;
 
         return $this;
     }
@@ -122,5 +92,31 @@ class Vehicle
         $this->plate_number = $plate_number;
 
         return $this;
+    }
+
+    /**
+     * Park the Vehicle to a Location. Returns true if succesfully parked, false otherwise.
+     *
+     * @param  Location $location the Location where to park the vehicle
+     * @return bool true if succesfully parked, false otherwise
+     */
+    public function parkTo(Location $location): bool
+    {
+        if ($this->location == $location) {
+            return false;
+        } else {
+            $this->setLocation($location);
+            return true;
+        }
+    }
+
+    /**
+     * Alias of getLocation
+     *
+     * @return Location
+     */
+    public function localize(): Location
+    {
+        return $this->getLocation();
     }
 }
